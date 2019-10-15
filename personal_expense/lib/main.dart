@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:personal_expense/transaction.dart';
+import 'package:personal_expense/models/transaction.dart';
+import 'package:intl/intl.dart';
 
 void main() => runApp(MyApp());
 
@@ -31,7 +32,7 @@ class MyHomePage extends StatelessWidget {
         title: Text('Flutter App'),
       ),
       body: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
           Container(
@@ -42,6 +43,28 @@ class MyHomePage extends StatelessWidget {
               elevation: 5,
             ),
           ),
+          Card(
+            elevation: 5,
+            child: Container(
+              padding: EdgeInsets.all(10),
+              child: Column(
+                  crossAxisAlignment:CrossAxisAlignment.end,
+                  children: <Widget>[
+                  TextField(
+                    decoration: InputDecoration(labelText: "Title"),
+                  ),
+                  TextField(
+                    decoration: InputDecoration(labelText: "Amount"),
+                  ),
+                  FlatButton(
+                    child: Text("Add Transaction"),
+                    textColor: Colors.purple,
+                    onPressed: () {},
+                  )
+                ],
+              ),
+            ),
+          ),
           Column(
             children: transactions.map((tx) =>
             Card(
@@ -50,7 +73,7 @@ class MyHomePage extends StatelessWidget {
                   Container(
                     margin: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
                     child: Text(
-                        tx.amount.toStringAsFixed(2),
+                        '\$${tx.amount.toStringAsFixed(2)}',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 20,
@@ -77,7 +100,7 @@ class MyHomePage extends StatelessWidget {
                         ),
                       ),
                       Text(
-                          tx.date.toIso8601String(),
+                         DateFormat.yMMMd().format(tx.date),
                         style: TextStyle(
                           color: Colors.grey
                         ),
