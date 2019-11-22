@@ -54,6 +54,7 @@ class _MyHomePageState extends State<MyHomePage> {
 //        id: "2", title: "Clothes", amount: 300.50,date: DateTime.now()
 //    )
   ];
+  bool _showChart = false;
 
   void _addNewTransaction(String title, double amount, DateTime date) {
     final newTx = Transaction(title: title, amount: amount, date: date, id: DateTime.now().toString());
@@ -84,23 +85,65 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          title: Text('Personal Expense'),
-          actions: <Widget>[
-            IconButton(
-              icon: Icon(Icons.add),
-              onPressed: () => _openTransactionModal(context),
-            ),
-          ],
+    final appBar = AppBar(
+      title: Text('Personal Expense'),
+      actions: <Widget>[
+        IconButton(
+          icon: Icon(Icons.add),
+          onPressed: () => _openTransactionModal(context),
         ),
+      ],
+    );
+
+    final _isLandscape = MediaQuery.of(context).orientation == Orientation.landscape;
+    final _txnList = Container(
+        height: (
+            MediaQuery.of(context).size.height
+                - appBar.preferredSize.height
+                - MediaQuery.of(context).padding.top)
+            * 0.7,
+        child: TransactionList(_userTransactions, _removeTransaction));
+    return Scaffold(
+        appBar: appBar,
         body: SingleChildScrollView(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
-              Chart(_recentTxn),
-              TransactionList(_userTransactions, _removeTransaction),
+              if (_isLandscape) Row( // ignore: sdk_version_ui_as_code
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Text(
+                    _showChart ? 'Show list': 'Show chart',
+                    style: TextStyle(color: Theme.of(context).primaryColorDark),
+                  ),
+                  Switch(
+                    value: _showChart,
+                    onChanged: (val) {
+                      setState(() {
+                        _showChart = val;
+                      });
+                    }
+                  )
+                ],
+              ),
+              if(!_isLandscape) Container(
+                  height: (
+                      MediaQuery.of(context).size.height
+                          - appBar.preferredSize.height
+                          - MediaQuery.of(context).padding.top)
+                      * 0.3,
+                  child: Chart(_recentTxn)),
+                 if(!_isLandscape) _txnList,
+              if(_isLandscape)_showChart ?
+              Container(
+                  height: (
+                      MediaQuery.of(context).size.height
+                          - appBar.preferredSize.height
+                          - MediaQuery.of(context).padding.top)
+                      * 0.7,
+                  child: Chart(_recentTxn))
+              :_txnList,
             ],
           ),
         ) ,
