@@ -37,33 +37,59 @@ class TransactionList extends StatelessWidget {
           : ListView.builder(
           itemCount: transaction.length,
           itemBuilder: (ctxt, index) =>
-              Card(
-                elevation: 5,
-                margin: EdgeInsets.symmetric(vertical: 8, horizontal: 5),
-                child: ListTile(
-                  leading: CircleAvatar(
-                    child: Padding(
-                      padding: EdgeInsets.all(6),
-                      child: FittedBox(
-                        child: Text('\$${transaction[index].amount.toStringAsFixed(2)}'),
-                      ),
-                    ),
-                  ),
-                  title: Text(
-                    transaction[index].title,
-                    style: Theme.of(context).textTheme.title,
-                  ),
-                  subtitle: Text(
-                    DateFormat.yMMMd().format(transaction[index].date)
-                  ),
-                  trailing: IconButton(
-                    icon: Icon(Icons.delete),
-                    color: Theme.of(context).errorColor,
-                    onPressed: () => deleteTxn(transaction[index].id)
+              Dismissible(
+                key: Key(transaction[index].id),
+                confirmDismiss: (dir) async {
+                  return  await deleteTxn(transaction[index].id, ctxt);
+                },
+                background: Container(
+                  color: Theme.of(context).errorColor,
+                  child: IconButton(
+                      icon: Icon(Icons.delete),
+                      color: Theme.of(context).errorColor,
+                      onPressed: () => deleteTxn(transaction[index].id)
 
                   ),
-                )
+                ),
+                child: Card(
+                  elevation: 5,
+                  margin: EdgeInsets.symmetric(vertical: 8, horizontal: 5),
+                  child: ListTile(
+                    leading: CircleAvatar(
+                      child: Padding(
+                        padding: EdgeInsets.all(6),
+                        child: FittedBox(
+                          child: Text('\$${transaction[index].amount.toStringAsFixed(2)}'),
+                        ),
+                      ),
+                    ),
+                    title: Text(
+                      transaction[index].title,
+                      style: Theme.of(context).textTheme.title,
+                    ),
+                    subtitle: Text(
+                      DateFormat.yMMMd().format(transaction[index].date)
+                    ),
+//                    trailing: MediaQuery.of(context).size.width > 460 ?
+//                    FlatButton.icon(
+//                        onPressed: () => deleteTxn(transaction[index].id),
+//                        icon: Icon(Icons.delete),
+//                        label: Text('Delete'),
+//                        textColor: Theme.of(context).errorColor,) :
+//                    IconButton(
+//                      icon: Icon(Icons.delete),
+//                      color: Theme.of(context).errorColor,
+//                      onPressed: () => deleteTxn(transaction[index].id)
+//
+//                    ),
+                  )
+                ),
               )),
     );
   }
+
+
+
 }
+
+enum ConfirmAction {OK, CANCEL}

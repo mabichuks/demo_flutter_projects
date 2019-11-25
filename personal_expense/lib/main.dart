@@ -64,9 +64,47 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  void _removeTransaction(String id) {
-    setState(() => _userTransactions.removeWhere((txn) => txn.id == id));
+  Future<ConfirmAction> _confirmDeleteItem(BuildContext context) async {
+    return showDialog<ConfirmAction>(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctxt) => AlertDialog(
+        title: Text('Detele Item?', style: TextStyle(color: Theme.of(context).textTheme.title.color),),
+        content: Text('This action cannot be reversed',),
+        actions: <Widget>[
+          FlatButton(
+            child: Text('CANCEL',),
+            onPressed: () => Navigator.of(context).pop(ConfirmAction.CANCEL),
+          ),
+          FlatButton(
+            child: Text('OK', style: TextStyle(color: Theme.of(context).errorColor),),
+            onPressed: () => Navigator.of(context).pop(ConfirmAction.OK),
+          )
+        ],
+      ),
+    );
   }
+
+  Future<bool> _removeTransaction(String id, BuildContext context) async {
+    //setState(() => _userTransactions.removeWhere((txn) => txn.id == id));
+    final ConfirmAction action =
+        await _confirmDeleteItem(context);
+    if (action == ConfirmAction.OK) {
+      setState(() {
+        _userTransactions.removeWhere((txn) => txn.id == id);
+      });
+      Scaffold.of(context).showSnackBar(SnackBar(
+        content: Text("Transaction dismissed"),
+      ));
+      return true;
+    }
+    Scaffold.of(context).showSnackBar(SnackBar(
+      content: Text("Transaction not dismissed"),
+    ));
+    return false;
+  }
+
+
 
   List<Transaction> get _recentTxn {
     return _userTransactions.where((x) => x.date.isAfter(DateTime.now().subtract(Duration(days: 7)))).toList();
@@ -75,6 +113,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void _openTransactionModal(BuildContext context) {
     showModalBottomSheet(
         context: context,
+        isScrollControlled: true,
         builder: (_) => GestureDetector(
           onTap: () {},
             child: NewTransaction(_addNewTransaction),
@@ -85,6 +124,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final mediaQuery =  MediaQuery.of(context);
+
     final appBar = AppBar(
       title: Text('Personal Expense'),
       actions: <Widget>[
@@ -95,12 +136,12 @@ class _MyHomePageState extends State<MyHomePage> {
       ],
     );
 
-    final _isLandscape = MediaQuery.of(context).orientation == Orientation.landscape;
+    final _isLandscape = mediaQuery.orientation == Orientation.landscape;
     final _txnList = Container(
         height: (
-            MediaQuery.of(context).size.height
+            mediaQuery.size.height
                 - appBar.preferredSize.height
-                - MediaQuery.of(context).padding.top)
+                - mediaQuery.padding.top)
             * 0.7,
         child: TransactionList(_userTransactions, _removeTransaction));
     return Scaffold(
@@ -129,18 +170,18 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
               if(!_isLandscape) Container(
                   height: (
-                      MediaQuery.of(context).size.height
+                      mediaQuery.size.height
                           - appBar.preferredSize.height
-                          - MediaQuery.of(context).padding.top)
+                          - mediaQuery.padding.top)
                       * 0.3,
                   child: Chart(_recentTxn)),
                  if(!_isLandscape) _txnList,
               if(_isLandscape)_showChart ?
               Container(
                   height: (
-                      MediaQuery.of(context).size.height
+                      mediaQuery.size.height
                           - appBar.preferredSize.height
-                          - MediaQuery.of(context).padding.top)
+                          - mediaQuery.padding.top)
                       * 0.7,
                   child: Chart(_recentTxn))
               :_txnList,
