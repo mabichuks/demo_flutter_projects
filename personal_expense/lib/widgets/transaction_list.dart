@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../models/transaction.dart';
@@ -42,14 +43,14 @@ class TransactionList extends StatelessWidget {
                 confirmDismiss: (dir) async {
                   return  await deleteTxn(transaction[index].id, ctxt);
                 },
+                direction: DismissDirection.endToStart,
                 background: Container(
                   color: Theme.of(context).errorColor,
-                  child: IconButton(
-                      icon: Icon(Icons.delete),
-                      color: Theme.of(context).errorColor,
-                      onPressed: () => deleteTxn(transaction[index].id)
+                  alignment: Alignment(1.0, 0.0),
+                  margin: EdgeInsets.symmetric(vertical: 8, horizontal: 5),
+                  padding: EdgeInsets.all(20),
+                  child: Icon(Icons.delete, color: Colors.white,),
 
-                  ),
                 ),
                 child: Card(
                   elevation: 5,
