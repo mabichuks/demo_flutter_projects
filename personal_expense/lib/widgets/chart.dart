@@ -14,9 +14,10 @@ class Chart extends StatelessWidget {
 
       double totalSum = 0.0;
       for (int i = 0; i < recentTransactions.length; i++) {
-        if (recentTransactions[i].date.day == weekDay.day &&
-            recentTransactions[i].date.month == weekDay.month &&
-            recentTransactions[i].date.year == weekDay.year) {
+        DateTime date = DateTime.parse(recentTransactions[i].date);
+        if (date.day == weekDay.day &&
+            date.month == weekDay.month &&
+            date.year == weekDay.year) {
           totalSum += recentTransactions[i].amount;
         }
       }

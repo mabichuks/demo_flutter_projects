@@ -3,14 +3,14 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 
 class Transaction {
-  String id;
+  int id;
   String title;
   double amount;
-  DateTime date;
+  String date;
 
 
   Transaction({
-    @required this.id,
+      this.id,
     @required this.title,
     @required this.amount,
     @required this.date

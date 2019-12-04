@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:personal_expense/data/DbProvider.dart';
 import 'package:personal_expense/widgets/chart.dart';
 import './widgets/new_transaction.dart';
 import './widgets/transaction_list.dart';
+import 'bloc/TransactionBloc.dart';
 import 'models/transaction.dart';
 
 
@@ -46,22 +48,18 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
 
-  final List<Transaction> _userTransactions = [
-//    Transaction(
-//        id: "1", title: "Groceries", amount: 122.40,date: DateTime.now()
-//    ),
-//    Transaction(
-//        id: "2", title: "Clothes", amount: 300.50,date: DateTime.now()
-//    )
-  ];
+   final List<Transaction> _userTransactions = [];
+   final bloc = TransactionBloc();
+
   bool _showChart = false;
 
   void _addNewTransaction(String title, double amount, DateTime date) {
-    final newTx = Transaction(title: title, amount: amount, date: date, id: DateTime.now().toString());
+    final newTx = Transaction(title: title, amount: amount, date: date.toString());
+    bloc.addTransaction(newTx);
 
-    setState(() {
-      _userTransactions.add(newTx);
-    });
+//    setState(() {
+//      _userTransactions.add(newTx);
+//    });
   }
 
 
@@ -92,7 +90,7 @@ class _MyHomePageState extends State<MyHomePage> {
         await _confirmDeleteItem(context);
     if (action == ConfirmAction.OK) {
       setState(() {
-        _userTransactions.removeWhere((txn) => txn.id == id);
+        _userTransactions.removeWhere((txn) => txn.id.toString() == id);
       });
       Scaffold.of(context).showSnackBar(SnackBar(
         content: Text("Transaction dismissed"),
@@ -108,7 +106,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
 
   List<Transaction> get _recentTxn {
-    return _userTransactions.where((x) => x.date.isAfter(DateTime.now().subtract(Duration(days: 7)))).toList();
+    return _userTransactions.where((x) => DateTime.parse(x.date).isAfter(DateTime.now().subtract(Duration(days: 7)))).toList();
   }
 
   void _openTransactionModal(BuildContext context) {
@@ -144,7 +142,19 @@ class _MyHomePageState extends State<MyHomePage> {
                 - appBar.preferredSize.height
                 - mediaQuery.padding.top)
             * 0.7,
-        child: TransactionList(_userTransactions, _removeTransaction));
+        child: StreamBuilder(
+          stream: bloc.transactions,
+          builder: (ctxt, AsyncSnapshot<List<Transaction>> snapshot) {
+            if(snapshot.connectionState == ConnectionState.done) {
+              if(snapshot.hasData) {
+                if(snapshot.data.length != 0) {
+                  return TransactionList(snapshot.data, _removeTransaction);
+                } else return TransactionList(_userTransactions, _removeTransaction);
+              } else return TransactionList(_userTransactions, _removeTransaction);
+            }
+            return Center(child: CircularProgressIndicator(),);
+          }
+        ));//TransactionList(_userTransactions, _removeTransaction));
     return Scaffold(
         appBar: appBar,
         body: SingleChildScrollView(

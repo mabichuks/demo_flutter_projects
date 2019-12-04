@@ -39,7 +39,7 @@ class TransactionList extends StatelessWidget {
           itemCount: transaction.length,
           itemBuilder: (ctxt, index) =>
               Dismissible(
-                key: Key(transaction[index].id),
+                key: Key(transaction[index].id.toString()),
                 confirmDismiss: (dir) async {
                   return  await deleteTxn(transaction[index].id, ctxt);
                 },
@@ -69,7 +69,7 @@ class TransactionList extends StatelessWidget {
                       style: Theme.of(context).textTheme.title,
                     ),
                     subtitle: Text(
-                      DateFormat.yMMMd().format(transaction[index].date)
+                      DateFormat.yMMMd().format(DateTime.parse(transaction[index].date))
                     ),
 //                    trailing: MediaQuery.of(context).size.width > 460 ?
 //                    FlatButton.icon(
