@@ -22,7 +22,11 @@ class TransactionBloc {
 
    void addTransaction(Transaction txn) async {
      await _txnRepo.add(txn);
-     getTransactions();
+    getTransactions();
+   }
+
+   Future<int> deleteTransaction(int id) async {
+     return await _txnRepo.delete(id);
    }
 
    void dispose() {

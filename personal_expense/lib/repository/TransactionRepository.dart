@@ -11,4 +11,8 @@ Future<List<Transaction>> getAll() async {
 Future<int> add(Transaction txn) async {
   return await dao.addTransaction(txn);
 }
+
+Future<int> delete(int id) async {
+  return await dao.deleteTransaction(id);
+}
 }

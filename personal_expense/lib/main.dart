@@ -48,7 +48,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
 
-   final List<Transaction> _userTransactions = [];
+   List<Transaction> _userTransactions;
    final bloc = TransactionBloc();
 
   bool _showChart = false;
@@ -84,29 +84,52 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  Future<bool> _removeTransaction(String id, BuildContext context) async {
-    //setState(() => _userTransactions.removeWhere((txn) => txn.id == id));
-    final ConfirmAction action =
-        await _confirmDeleteItem(context);
-    if (action == ConfirmAction.OK) {
-      setState(() {
-        _userTransactions.removeWhere((txn) => txn.id.toString() == id);
-      });
-      Scaffold.of(context).showSnackBar(SnackBar(
-        content: Text("Transaction dismissed"),
-      ));
-      return true;
-    }
-    Scaffold.of(context).showSnackBar(SnackBar(
-      content: Text("Transaction not dismissed"),
-    ));
-    return false;
-  }
+   void _deleteTransaction(int index, Transaction deletedTxn, BuildContext context) {
+     setState(() {
+       _userTransactions.removeAt(index);
+     });
+     Scaffold.of(context).showSnackBar(SnackBar(
+      content: Text('Transaction deleted'),
+      action: SnackBarAction(
+        label: 'Undo',
+        onPressed: () {
+          setState(() {
+            _userTransactions.insert(index, deletedTxn);
+          });
+        },
+      ),
+    )).closed.then((reason) {
+      if(reason != SnackBarClosedReason.action) {
+        bloc.deleteTransaction(deletedTxn.id);
+      }
+     });
+   }
 
 
+//  Future<bool> _removeTransaction(String id, BuildContext context) async {
+//    //setState(() => _userTransactions.removeWhere((txn) => txn.id == id));
+//    final ConfirmAction action =
+//        await _confirmDeleteItem(context);
+//    if (action == ConfirmAction.OK) {
+//      setState(() {
+//        _userTransactions.removeWhere((txn) => txn.id.toString() == id);
+//      });
+//      Scaffold.of(context).showSnackBar(SnackBar(
+//        content: Text("Transaction dismissed"),
+//      ));
+//      return true;
+//    }
+//    Scaffold.of(context).showSnackBar(SnackBar(
+//      content: Text("Transaction not dismissed"),
+//    ));
+//    return false;
+//  }
 
-  List<Transaction> get _recentTxn {
-    return _userTransactions.where((x) => DateTime.parse(x.date).isAfter(DateTime.now().subtract(Duration(days: 7)))).toList();
+
+  List<Transaction> _getRecentTxn(List<Transaction> txn) {
+    if(txn != null)
+      return txn.where((x) => DateTime.parse(x.date).isAfter(DateTime.now().subtract(Duration(days: 7)))).toList();
+    return [];
   }
 
   void _openTransactionModal(BuildContext context) {
@@ -142,16 +165,16 @@ class _MyHomePageState extends State<MyHomePage> {
                 - appBar.preferredSize.height
                 - mediaQuery.padding.top)
             * 0.7,
-        child: StreamBuilder(
+        child: StreamBuilder<List<Transaction>>(
           stream: bloc.transactions,
-          builder: (ctxt, AsyncSnapshot<List<Transaction>> snapshot) {
-            if(snapshot.connectionState == ConnectionState.done) {
+          builder: (ctxt, snapshot) {
               if(snapshot.hasData) {
-                if(snapshot.data.length != 0) {
-                  return TransactionList(snapshot.data, _removeTransaction);
-                } else return TransactionList(_userTransactions, _removeTransaction);
-              } else return TransactionList(_userTransactions, _removeTransaction);
-            }
+                _userTransactions = snapshot.data;
+                print('User trans $_userTransactions');
+                print('=============');
+                print('Snapshot $snapshot.data');
+                  return TransactionList(_userTransactions, _deleteTransaction);
+              } //else return TransactionList(_userTransactions, _deleteTransaction);
             return Center(child: CircularProgressIndicator(),);
           }
         ));//TransactionList(_userTransactions, _removeTransaction));
@@ -185,7 +208,13 @@ class _MyHomePageState extends State<MyHomePage> {
                           - appBar.preferredSize.height
                           - mediaQuery.padding.top)
                       * 0.3,
-                  child: Chart(_recentTxn)),
+                  child: StreamBuilder<List<Transaction>>(
+                    stream: bloc.transactions,
+                    builder: (context, snapshot) {
+                      List<Transaction> _recentTxn = _getRecentTxn(snapshot.data);
+                      return Chart(_recentTxn);
+                    }
+                  )),
                  if(!_isLandscape) _txnList,
               if(_isLandscape)_showChart ?
               Container(
@@ -194,7 +223,13 @@ class _MyHomePageState extends State<MyHomePage> {
                           - appBar.preferredSize.height
                           - mediaQuery.padding.top)
                       * 0.7,
-                  child: Chart(_recentTxn))
+                  child: StreamBuilder<List<Transaction>>(
+                      stream: bloc.transactions,
+                      builder: (context, snapshot) {
+                        List<Transaction> _recentTxn = _getRecentTxn(snapshot.data);
+                        return Chart(_recentTxn);
+                    }
+                  ))
               :_txnList,
             ],
           ),
@@ -203,7 +238,7 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Icon(Icons.add),
         onPressed: () => _openTransactionModal(context),
     ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
 }

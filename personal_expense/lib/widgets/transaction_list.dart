@@ -40,9 +40,10 @@ class TransactionList extends StatelessWidget {
           itemBuilder: (ctxt, index) =>
               Dismissible(
                 key: Key(transaction[index].id.toString()),
-                confirmDismiss: (dir) async {
-                  return  await deleteTxn(transaction[index].id, ctxt);
-                },
+//                confirmDismiss: (dir)  {
+//                  return  deleteTxn(index, transaction[index], context);
+//                },
+                onDismissed: (dir) => deleteTxn(index, transaction[index], context),
                 direction: DismissDirection.endToStart,
                 background: Container(
                   color: Theme.of(context).errorColor,
