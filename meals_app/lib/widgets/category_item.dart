@@ -33,6 +33,6 @@ class CategoryItem extends StatelessWidget {
 
   void _selectItem(BuildContext ctxt) {
     Navigator.of(ctxt)
-        .pushNamed(Routes.CATEGORY_MEALS_ROUTE, arguments: {'id': id, 'title': title});
+        .pushNamed(Routes.CATEGORY_MEALS_SCREEN, arguments: {'id': id, 'title': title});
   }
 }
