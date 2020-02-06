@@ -9,15 +9,16 @@ class MealItem extends StatelessWidget {
   final int duration;
   final Affordability affordability;
   final Complexity complexity;
+  final Function removeItem;
 
   const MealItem(
-      {
-        @required this.id,
-        @required this.title,
+      {@required this.id,
+      @required this.title,
       @required this.imageUrl,
       @required this.duration,
       @required this.affordability,
-      @required this.complexity});
+      @required this.complexity,
+      @required this.removeItem});
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +36,8 @@ class MealItem extends StatelessWidget {
                   borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(15),
                       topRight: Radius.circular(15)),
-                  child: Image.network(imageUrl, height: 250, width: double.infinity, fit: BoxFit.cover),
+                  child: Image.network(imageUrl,
+                      height: 250, width: double.infinity, fit: BoxFit.cover),
                 ),
                 Positioned(
                   bottom: 20,
@@ -46,10 +48,7 @@ class MealItem extends StatelessWidget {
                     padding: EdgeInsets.symmetric(vertical: 5, horizontal: 20),
                     child: Text(
                       title,
-                      style: TextStyle(
-                        fontSize: 22,
-                        color: Colors.white
-                      ),
+                      style: TextStyle(fontSize: 22, color: Colors.white),
                       softWrap: true,
                       overflow: TextOverflow.fade,
                     ),
@@ -60,31 +59,36 @@ class MealItem extends StatelessWidget {
             Padding(
               padding: EdgeInsets.all(20),
               child: Row(
-                mainAxisAlignment:  MainAxisAlignment.spaceAround,
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: <Widget>[
                   Row(
                     children: <Widget>[
                       Icon(Icons.schedule),
-                      SizedBox(width: 6,),
+                      SizedBox(
+                        width: 6,
+                      ),
                       Text('$duration mins')
                     ],
                   ),
                   Row(
                     children: <Widget>[
                       Icon(Icons.work),
-                      SizedBox(width: 6,),
+                      SizedBox(
+                        width: 6,
+                      ),
                       Text('$complexityText')
                     ],
                   ),
                   Row(
                     children: <Widget>[
                       Icon(Icons.attach_money),
-                      SizedBox(width: 6,),
+                      SizedBox(
+                        width: 6,
+                      ),
                       Text('$affordabilityText')
                     ],
                   )
                 ],
-
               ),
             )
           ],
@@ -94,13 +98,12 @@ class MealItem extends StatelessWidget {
   }
 
   _selectItem(BuildContext ctxt) {
-    Navigator.of(ctxt).pushNamed(
-      Routes.MEAL_DETAILS_SCREEN, arguments: {'id': id}
-    );
+    Navigator.of(ctxt).pushNamed(Routes.MEAL_DETAILS_SCREEN,
+        arguments: {'id': id}).then((res) => removeItem(res));
   }
 
   String get complexityText {
-    switch(complexity) {
+    switch (complexity) {
       case Complexity.Simple:
         return 'Simple';
         break;
@@ -116,7 +119,7 @@ class MealItem extends StatelessWidget {
   }
 
   String get affordabilityText {
-    switch(affordability) {
+    switch (affordability) {
       case Affordability.Affordable:
         return 'Affordable';
         break;
@@ -130,6 +133,4 @@ class MealItem extends StatelessWidget {
         return 'Unknown';
     }
   }
-
-
 }
