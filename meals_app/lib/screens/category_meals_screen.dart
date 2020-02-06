@@ -10,6 +10,10 @@ class CategoryMealsScreen extends StatefulWidget {
 
   //CategoryMealsScreen(this.id, this.title, this.color);
 
+  final List<Meal> availableMeals;
+
+  CategoryMealsScreen(this.availableMeals);
+
   @override
   _CategoryMealsScreenState createState() => _CategoryMealsScreenState();
 }
@@ -28,7 +32,7 @@ class _CategoryMealsScreenState extends State<CategoryMealsScreen> {
        title = routeArgs['title'];
       final categoryId = routeArgs['id'];
 
-       categoryMeals = DUMMY_MEALS
+       categoryMeals = widget.availableMeals
           .where((meal) => meal.categories.contains(categoryId))
           .toList();
        _isLoaded = true;
@@ -61,7 +65,6 @@ class _CategoryMealsScreenState extends State<CategoryMealsScreen> {
               duration: categoryMeals[index].duration,
               affordability: categoryMeals[index].affordability,
               complexity: categoryMeals[index].complexity,
-              removeItem: _removeItem,
           );
         },
         itemCount: categoryMeals.length,

@@ -46,12 +46,20 @@ class MainDrawer extends StatelessWidget {
           _buildListTile(
             'Meals', 
             Icons.restaurant,
-              () => Navigator.of(context).pushReplacementNamed('/')
+              () {
+              if(ModalRoute.of(context).settings.name != '/') {
+                Navigator.of(context).pushReplacementNamed('/');
+              } else {Navigator.of(context).pop();}
+              }
              ),
           _buildListTile(
               'Filters', 
               Icons.settings,
-              () => Navigator.of(context).pushReplacementNamed(Routes.FILTERS_SCREEN)
+              (){
+                if(ModalRoute.of(context).settings.name != Routes.FILTERS_SCREEN) {
+                  Navigator.of(context).pushReplacementNamed(Routes.FILTERS_SCREEN);
+                } else {Navigator.of(context).pop();}
+              }
           ),
         ],
       ),
