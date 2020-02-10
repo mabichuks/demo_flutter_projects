@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:meals_app/models/meal.dart';
 import 'package:meals_app/routes/routes.dart';
+import 'package:meals_app/widgets/image_loader.dart';
 
 class MealItem extends StatelessWidget {
   final String id;
@@ -35,8 +36,7 @@ class MealItem extends StatelessWidget {
                   borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(15),
                       topRight: Radius.circular(15)),
-                  child: Image.network(imageUrl,
-                      height: 250, width: double.infinity, fit: BoxFit.cover),
+                  child: ImageLoader(imageUrl),
                 ),
                 Positioned(
                   bottom: 20,

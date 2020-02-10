@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:meals_app/app_config.dart';
 import 'package:meals_app/models/dummydata.dart';
+import 'package:meals_app/widgets/image_loader.dart';
 
 class MealDetailScreen extends StatelessWidget {
 
@@ -29,10 +30,7 @@ class MealDetailScreen extends StatelessWidget {
               Container(
                 height: AppConfig.safeBlockVertical * 40,
                 width: double.infinity,
-                child: Image.network(
-                  meal.imageUrl,
-                  fit: BoxFit.cover,
-                ),
+                child:ImageLoader(meal.imageUrl)
               ),
               buildSectionTitle(context, 'Ingredients'),
               buildContainer(
