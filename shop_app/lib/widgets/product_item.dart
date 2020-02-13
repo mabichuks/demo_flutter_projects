@@ -21,11 +21,13 @@ class ProductItem extends StatelessWidget  {
       child: GridTile(
         child: Image.network(product.imageUrl, fit: BoxFit.cover,),
         footer: GridTileBar(
-          leading: IconButton(
-            icon: Icon(product.isFavourite ? Icons.favorite : Icons.favorite_border),
-            color: Theme.of(context).accentColor,
-            onPressed: () => product.toggleFavouriteStatus(),
+          leading: Consumer<Product>(
+            builder: (ctx,prod,child) => IconButton(
+              icon: Icon(product.isFavourite ? Icons.favorite : Icons.favorite_border),
+              color: Theme.of(context).accentColor,
+              onPressed: () => product.toggleFavouriteStatus(),
 
+            ),
           ),
           backgroundColor: Colors.black87,
           title: Text(product.title, textAlign: TextAlign.center,),

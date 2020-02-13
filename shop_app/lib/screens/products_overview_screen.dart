@@ -8,6 +8,14 @@ class ProductsOverview extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('My Shop'),
+        actions: <Widget>[
+          PopupMenuButton<Widget>(
+            child: Icon(Icons.more_vert),
+            itemBuilder: (_) => [
+
+            ],
+          )
+        ],
       ),
       body: new ProductsGrid(),
     );
