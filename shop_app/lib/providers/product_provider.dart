@@ -40,9 +40,15 @@ class ProductProvider with ChangeNotifier {
     ),
   ];
 
+
+
   List<Product> get items {
+
     return [..._items];
   }
+
+  List<Product> get favouriteItems => _items.where((item) => item.isFavourite).toList();
+
 
   void addProduct() {
     //TODO implement add products
